@@ -1,42 +1,62 @@
-const db = require('../config/db')
+const pool = require('../config/db');
 
 const clienteModel = {
 
-  // Buscar todos os clientes
-  selecionarTodos: () => {
-    const sql = 'SELECT * FROM clientes'
-    return db.promise().query(sql)
-  },
+    /**
+     * Busca todos os clientes cadastrados.
+     */
+    selecionarTodos: async () => {
+        const sql = 'SELECT * FROM clientes;';
+        const [rows] = await pool.query(sql);
+        return rows; // retorna a lista completa
+    },
 
-  // Buscar cliente pelo CPF
-  selecionarPorCpf: (cpfCliente) => {
-    const sql = 'SELECT * FROM clientes WHERE cpfCliente = ?'
-    return db.promise().query(sql, [cpfCliente])
-  },
+    /**
+     * Procura um cliente pelo id.
+     * @param {number} id id do cliente
+     */
+    selecionarPorId: async (id) => {
+        const sql = 'SELECT * FROM clientes WHERE id_cliente = ?';
+        const values = [id];
+        const [rows] = await pool.query(sql, values);
+        return rows; // retorna só o cliente encontrado
+    },
 
-  // Buscar cliente pelo ID
-  selecionarPorId: (idCliente) => {
-    const sql = 'SELECT * FROM clientes WHERE idCliente = ?'
-    return db.promise().query(sql, [idCliente])
-  },
+    /**
+     * Cadastra um cliente novo.
+     * @param {string} nome nome do cliente
+     * @param {string} cpf cpf do cliente
+     */
+    inserirCliente: async (nome, cpf) => {
+        const sql = 'INSERT INTO clientes (nome, cpf) VALUES (?, ?)';
+        const values = [nome, cpf];
+        const [rows] = await pool.query(sql, values);
+        return rows; // resultado do insert
+    },
 
-  // Inserir novo cliente
-  inserirCliente: (nomeCliente, cpfCliente) => {
-    const sql = 'INSERT INTO clientes (nomeCliente, cpfCliente) VALUES (?, ?)'
-    return db.promise().query(sql, [nomeCliente, cpfCliente])
-  },
+    /**
+     * Atualiza um cliente existente.
+     * @param {string} nome novo nome
+     * @param {string} cpf novo cpf
+     * @param {number} id id do cliente
+     */
+    alterarCliente: async (nome, cpf, id) => {
+        const sql = 'UPDATE clientes SET nome = ?, cpf = ? WHERE id_cliente = ?';
+        const values = [nome, cpf, id];
+        const [rows] = await pool.query(sql, values);
+        return rows;
+    },
 
-  // Atualizar cliente existente
-  atualizarCliente: (idCliente, nomeCliente, cpfCliente) => {
-    const sql = 'UPDATE clientes SET nomeCliente = ?, cpfCliente = ? WHERE idCliente = ?'
-    return db.promise().query(sql, [nomeCliente, cpfCliente, idCliente])
-  },
+    /**
+     * Deleta um cliente pelo id.
+     * @param {number} id id do cliente
+     */
+    deleteCliente: async (id) => {
+        const sql = 'DELETE FROM clientes WHERE id_cliente = ?';
+        const values = [id];
+        const [rows] = await pool.query(sql, values);
+        return rows;
+    }
+};
 
-  // Deletar cliente pelo ID
-  deletarCliente: (idCliente) => {
-    const sql = 'DELETE FROM clientes WHERE idCliente = ?'
-    return db.promise().query(sql, [idCliente])
-  }
-}
-
-module.exports = { clienteModel }
+module.exports = { clienteModel };

@@ -2,19 +2,19 @@ const connection = require('../config/db')
 
 const entregaModel = {
 
-  // busca todas as entregas cadastradas
+  // pega todas as entregas salvas no banco
   selecionarTodas: () => {
     const sql = 'SELECT * FROM entregas'
     return connection.promise().query(sql)
   },
 
-  // busca entrega pelo ID
+  // busca uma entrega específica pelo ID
   selecionarPorId: (idEntrega) => {
     const sql = 'SELECT * FROM entregas WHERE idEntrega = ?'
     return connection.promise().query(sql, [idEntrega])
   },
 
-  // insere entrega (já com os cálculos)
+  // cadastra uma nova entrega já com os valores calculados no controller
   inserirEntrega: (dados) => {
     const sql = `
       INSERT INTO entregas
@@ -33,7 +33,7 @@ const entregaModel = {
     ])
   },
 
-  // atualiza entrega
+  // faz a atualização das informações de uma entrega já existente
   atualizarEntrega: (idEntrega, dados) => {
     const sql = `
       UPDATE entregas SET
@@ -53,7 +53,7 @@ const entregaModel = {
     ])
   },
 
-  // exclui entrega
+  // remove uma entrega pelo ID
   deletarEntrega: (idEntrega) => {
     const sql = 'DELETE FROM entregas WHERE idEntrega = ?'
     return connection.promise().query(sql, [idEntrega])

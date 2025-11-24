@@ -1,110 +1,53 @@
-const { pedidoModel } = require('../models/pedidoModel')
+const { clienteModel } = require("../models/clienteModel")
+const clienteController = {
 
-const pedidoController = {
+    // cadastra um cliente novo
+    criarCliente: async (req, res) => {
+        try {
+            const dados = req.body
 
-  // buscar todos os pedidos
-  buscarTodosPedidos: async (req, res) => {
-    try {
-      const [dados] = await pedidoModel.selecionarTodos()
+            // só conferindo se veio tudo certinho do front
+            if(!dados.nome || !dados.cpf || !dados.telefone || !dados.email){
+                return res.status(400).json({ mensagem: "Preencha todos os campos obrigatórios." })
+            }
 
-      if (dados.length === 0) {
-        return res.status(200).json({ message: 'nenhum pedido cadastrado' })
-      }
+            const resultado = await clienteModel.criarCliente(dados)
 
-      res.status(200).json({ message: 'pedidos encontrados', data: dados })
-    } catch (error) {
-      res.status(500).json({ message: 'erro no servidor', error: error.message })
+            res.status(201).json({ mensagem: "Cliente cadastrado com sucesso!", id: resultado.insertId })
+        } catch (erro) {
+            console.log("Erro ao cadastrar cliente:", erro)
+            res.status(500).json({ erro: "Erro interno no servidor." })
+        }
+    },
+
+    // pega todos os clientes cadastrados
+    listarClientes: async (req, res) => {
+        try {
+            const [lista] = await clienteModel.listarClientes()
+            res.json(lista)
+        } catch (erro) {
+            console.log("Erro para listar clientes:", erro)
+            res.status(500).json({ erro: "Erro interno no servidor." })
+        }
+    },
+
+    // pega apenas um cliente pelo ID
+    buscarPorId: async (req, res) => {
+        try {
+            const id = req.params.id
+
+            const [cliente] = await clienteModel.buscarPorId(id)
+
+            if(cliente.length === 0){
+                return res.status(404).json({ mensagem: "Cliente não encontrado." })
+            }
+
+            res.json(cliente[0])
+        } catch (erro) {
+            console.log("Erro ao buscar cliente:", erro)
+            res.status(500).json({ erro: "Erro interno no servidor." })
+        }
     }
-  },
-
-  // buscar pedido por ID
-  buscarPedidoPorId: async (req, res) => {
-    try {
-      const { id } = req.query
-
-      if (!id) {
-        return res.status(400).json({ message: 'informe o id do pedido' })
-      }
-
-      const [pedido] = await pedidoModel.selecionarPorId(id)
-
-      if (pedido.length === 0) {
-        return res.status(404).json({ message: 'pedido não encontrado' })
-      }
-
-      res.status(200).json({ message: 'pedido encontrado', data: pedido[0] })
-    } catch (error) {
-      res.status(500).json({ message: 'erro no servidor', error: error.message })
-    }
-  },
-
-  // criar pedido
-  incluirPedido: async (req, res) => {
-    try {
-      const { idCliente, dataPedido, tipoEntrega, distancia, peso, valorKm, valorKg } = req.body
-
-      if (!idCliente || !dataPedido || !tipoEntrega || !distancia || !peso || !valorKm || !valorKg) {
-        return res.status(400).json({ message: 'preencha todos os dados obrigatórios' })
-      }
-
-      const [resultado] = await pedidoModel.inserirPedido(req.body)
-
-      if (resultado.affectedRows === 1) {
-        res.status(201).json({
-          message: 'pedido criado com sucesso',
-          idPedido: resultado.insertId
-        })
-      } else {
-        res.status(400).json({ message: 'erro ao criar pedido' })
-      }
-
-    } catch (error) {
-      res.status(500).json({ message: 'erro no servidor', error: error.message })
-    }
-  },
-
-  // atualizar pedido
-  editarPedido: async (req, res) => {
-    try {
-      const { idPedido } = req.params
-      const dados = req.body
-
-      if (!idPedido) {
-        return res.status(400).json({ message: 'informe o id do pedido' })
-      }
-
-      const [resultado] = await pedidoModel.atualizarPedido(idPedido, dados)
-
-      if (resultado.affectedRows === 1) {
-        res.status(200).json({ message: 'pedido atualizado com sucesso' })
-      } else {
-        res.status(404).json({ message: 'pedido não encontrado' })
-      }
-    } catch (error) {
-      res.status(500).json({ message: 'erro no servidor', error: error.message })
-    }
-  },
-
-  // excluir pedido
-  excluirPedido: async (req, res) => {
-    try {
-      const { idPedido } = req.params
-
-      if (!idPedido) {
-        return res.status(400).json({ message: 'informe o id do pedido' })
-      }
-
-      const [resultado] = await pedidoModel.deletarPedido(idPedido)
-
-      if (resultado.affectedRows === 1) {
-        res.status(200).json({ message: 'pedido excluído com sucesso' })
-      } else {
-        res.status(404).json({ message: 'pedido não encontrado' })
-      }
-    } catch (error) {
-      res.status(500).json({ message: 'erro no servidor', error: error.message })
-    }
-  }
 }
 
-module.exports = { pedidoController }
+module.exports = { clienteController }

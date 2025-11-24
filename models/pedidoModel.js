@@ -2,19 +2,20 @@ const connection = require('../config/db')
 
 const pedidoModel = {
 
-  // busca todos os pedidos cadastrados
+  // pega todos os pedidos que já foram cadastrados
   selecionarTodos: () => {
     const sql = 'SELECT * FROM pedidos'
     return connection.promise().query(sql)
   },
 
-  // busca pedido pelo ID
+  // busca um pedido específico pelo ID
   selecionarPorId: (idPedido) => {
     const sql = 'SELECT * FROM pedidos WHERE idPedido = ?'
     return connection.promise().query(sql, [idPedido])
   },
 
-  // insere novo pedido
+  // adiciona um novo pedido no banco
+  // os valores principais já chegam prontos do controller
   inserirPedido: (dados) => {
     const sql = `
       INSERT INTO pedidos
@@ -32,7 +33,7 @@ const pedidoModel = {
     ])
   },
 
-  // atualiza um pedido existente
+  // atualiza as informações de um pedido já existente
   atualizarPedido: (idPedido, dados) => {
     const sql = `
       UPDATE pedidos SET
@@ -52,7 +53,7 @@ const pedidoModel = {
     ])
   },
 
-  // exclui pedido
+  // remove um pedido do banco pelo ID
   deletarPedido: (idPedido) => {
     const sql = 'DELETE FROM pedidos WHERE idPedido = ?'
     return connection.promise().query(sql, [idPedido])
