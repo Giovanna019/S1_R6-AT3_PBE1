@@ -1,4 +1,4 @@
-const express = require("express")
+const express = require('express');
 const cors = require("cors")
 
 // importando as rotas separadas pra deixar o projeto mais organizado
@@ -6,7 +6,7 @@ const clienteRoutes = require("./routes/clienteRoutes")
 const pedidoRoutes = require("./routes/pedidoRoutes")
 const entregaRoutes = require("./routes/entregaRoutes")
 
-const app = express()
+const app = express();
 
 // habilita o cors pra evitar erro quando testar no front
 app.use(cors())
