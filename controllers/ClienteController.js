@@ -1,50 +1,52 @@
 const { clienteModel } = require("../models/clienteModel")
+
 const clienteController = {
 
-    // cadastra um cliente novo
-    criarCliente: async (req, res) => {
-        try {
-            const dados = req.body
-
-            // só conferindo se veio tudo certinho do front
-            if(!dados.nome || !dados.cpf || !dados.telefone || !dados.email){
-                return res.status(400).json({ mensagem: "Preencha todos os campos obrigatórios." })
-            }
-
-            const resultado = await clienteModel.criarCliente(dados)
-
-            res.status(201).json({ mensagem: "Cliente cadastrado com sucesso!", id: resultado.insertId })
-        } catch (erro) {
-            console.log("Erro ao cadastrar cliente:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
-        }
-    },
-
-    // pega todos os clientes cadastrados
+    // lista todos
     listarClientes: async (req, res) => {
         try {
-            const [lista] = await clienteModel.listarClientes()
+            const lista = await clienteModel.selecionarTodos()
             res.json(lista)
         } catch (erro) {
-            console.log("Erro para listar clientes:", erro)
+            console.log("deu ruim na listagem:", erro)
             res.status(500).json({ erro: "Erro interno no servidor." })
         }
     },
 
-    // pega apenas um cliente pelo ID
-    buscarPorId: async (req, res) => {
+    // puxa por id
+    buscarClientePorId: async (req, res) => {
         try {
             const id = req.params.id
+            const cliente = await clienteModel.selecionarPorId(id)
 
-            const [cliente] = await clienteModel.buscarPorId(id)
-
-            if(cliente.length === 0){
+            if (!cliente) {
                 return res.status(404).json({ mensagem: "Cliente não encontrado." })
             }
+            res.json(cliente)
 
-            res.json(cliente[0])
         } catch (erro) {
-            console.log("Erro ao buscar cliente:", erro)
+            console.log("erro ao buscar por id:", erro)
+            res.status(500).json({ erro: "Erro interno no servidor." })
+        }
+    },
+
+    // cria novo cliente
+    inserirCliente: async (req, res) => {
+        try {
+            const { nome, cpf, telefone, email, endereco } = req.body
+
+            if (!nome || !cpf || !telefone || !email) {
+                return res.status(400).json({ mensagem: "manda os 4 campos ai pfv" })
+            }
+
+            const resultado = await clienteModel.inserirCliente({
+                nome, cpf, telefone, email, endereco
+            })
+
+            res.status(201).json({ mensagem: "cliente criado meu patrão", id: resultado })
+
+        } catch (erro) {
+            console.log("erro ao inserir:", erro)
             res.status(500).json({ erro: "Erro interno no servidor." })
         }
     }
