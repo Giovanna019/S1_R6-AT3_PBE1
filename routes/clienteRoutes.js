@@ -1,13 +1,11 @@
-const express = require('express')
-const clientesRouter = express.Router()
-const { clienteController } = require('../controllers/clienteController')
+const express = require('express');
+const clienteRoutes = express.Router();
+const  clienteController  = require('../controllers/clienteController');
 
+clienteRoutes.get('/clientes', clienteController.selecionaTodosClientes);
+clienteRoutes.post('/clientes', clienteController.criarCliente);
+clienteRoutes.put('/clientes/atualizatelefone', clienteController.atualizaTelefone)
+clienteRoutes.put('/clientes/atualizacliente/:id', clienteController.atualizaCliente)
+clienteRoutes.delete('/clientes/deletarcliente/:id', clienteController.DeleteCliente)
 
-clientesRouter.get('/', clienteController.listarClientes)
-
-clientesRouter.get('/:id', clienteController.buscarClientePorId)
-
-clientesRouter.post('/', clienteController.inserirCliente)
-
-module.exports = clientesRouter
-
+module.exports = { clienteRoutes };

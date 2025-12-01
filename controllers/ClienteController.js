@@ -1,55 +1,97 @@
-const { clienteModel } = require("../models/clienteModel")
+const { query } = require('../config/db');
+const {ClienteModel} = require('../models/clienteModel');
+const { telefoneModel } = require('../models/telefoneModel');
 
-const clienteController = {
+const ClienteController = {
 
-    // lista todos
-    listarClientes: async (req, res) => {
+    // Criar cliente
+    criarCliente: async (req, res) => {
         try {
-            const lista = await clienteModel.selecionarTodos()
-            res.json(lista)
-        } catch (erro) {
-            console.log("deu ruim na listagem:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
+            const {
+                nome_completo,
+                cpf,
+                email,
+                logradouro,
+                numero,
+                bairro,
+                cidade,
+                estado,
+                cep,
+                telefones
+            } = req.body;
+
+            if (!nome_completo || !cpf || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep ||! telefones) {
+                return res.status(400).json({ erro: "Todos os campos principais devem ser preenchidos." });};
+ 
+            
+            const cpfExistente = await ClienteModel.selecionarClientePorCpf(cpf);
+
+            if (cpf == cpfExistente) {
+                return res.status(409).json({ erro: "CPF já cadastrado no sistema." });}
+
+            const resultado = await ClienteModel.criarCliente(
+                nome_completo,
+                cpf,
+                email,
+                logradouro,
+                numero,
+                bairro,
+                cidade,
+                estado,
+                cep,
+                telefones
+            );
+
+            return res.status(201).json({
+                mensagem: "Cliente cadastrado com sucesso!",
+                resultado
+            });
+
+        } catch (error) {
+            return res.status(500).json({ erro: error.message });
         }
     },
 
-    // puxa por id
-    buscarClientePorId: async (req, res) => {
+    selecionaTodosClientes: async (req, res) => {
         try {
-            const id = req.params.id
-            const cliente = await clienteModel.selecionarPorId(id)
-
-            if (!cliente) {
-                return res.status(404).json({ mensagem: "Cliente não encontrado." })
+            const clientes = await ClienteModel.selecionaTodosClientes();
+            if (clientes.length === 0) {
+                return res.status(200).json({ mensagem: "lista de clientes vazia" });
             }
-            res.json(cliente)
+            return res.status(200).json(clientes);
 
-        } catch (erro) {
-            console.log("erro ao buscar por id:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
+        } catch (error) {
+            return res.status(500).json({ erro: error.message });
         }
     },
-
-    // cria novo cliente
-    inserirCliente: async (req, res) => {
+     
+    DeleteCliente: async (req,res) => {
         try {
-            const { nome, cpf, telefone, email, endereco } = req.body
-
-            if (!nome || !cpf || !telefone || !email) {
-                return res.status(400).json({ mensagem: "manda os 4 campos ai pfv" })
+            const id_cliente = req.params.id;
+            if (!id_cliente || id_cliente.trim() === '') {
+                return res.status(400).json({ erro: "ID do cliente é obrigatório." });
             }
-
-            const resultado = await clienteModel.inserirCliente({
-                nome, cpf, telefone, email, endereco
-            })
-
-            res.status(201).json({ mensagem: "cliente criado meu patrão", id: resultado })
-
-        } catch (erro) {
-            console.log("erro ao inserir:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
+            //envia mensagem de erro.
+            const clienteExistente = await ClienteModel.selecionerClientePorId(id_cliente);
+            if (!clienteExistente) {
+                return res.status(404).json({ erro: "Cliente não encontrado ou já deletado." });
+            }
+            //se  nao estiver em entregue, nao deixar deletar o cliente
+            if (clienteExistente.status_entrega !== 'entregue') {
+                return res.status(400).json({ erro: "Não é possível deletar o cliente. Existem entregas pendentes ou em andamento." });
+            }
+            const resultado = await ClienteModel.deleteCliente(id_cliente);
+            return res.status(200).json({
+                message: "Cliente deletado com sucesso!",
+                data: resultado
+            });
+        } catch (error) {
+            console.error("Erro ao deletar cliente:", error);
+            return res.status(500).json({ erro: error.message });
         }
+
     }
-}
 
-module.exports = { clienteController }
+};
+
+module.exports = ClienteController;

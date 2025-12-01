@@ -1,35 +1,184 @@
-const { pedidoModel } = require("../models/pedidoModel")
+const { ClienteModel } = require('../models/clienteModel');
+const pedidoModel = require('../models/pedidoModel');
 const pedidoController = {
 
-    // cria um pedido novo
-    criarPedido: async (req, res) => {
+  
+    // Criar pedido
+    criaPedido: async (req, res) => {
         try {
-            const dados = req.body
+            const {
+                id_cliente,
+                data_pedido,
+                tipo_entrega,
+                distancia_km,
+                peso_kg
+            } = req.body;
 
-            // conferindo os campos principais
-            if(!dados.idCliente || !dados.tipoEntrega || !dados.distancia || !dados.peso){
-                return res.status(400).json({ mensagem: "Dados incompletos." })
+            // validação
+            if (!id_cliente || !data_pedido || !tipo_entrega || !distancia_km || !peso_kg) {
+                return res.status(400).json({ erro: "Todos os campos devem ser preenchidos." });
             }
 
-            const resultado = await pedidoModel.criarPedido(dados)
+            if (tipo_entrega !== "normal" && tipo_entrega !== "urgente") {
+                return res.status(400).json({ erro: "O tipo de entrega deve ser 'normal' ou 'urgente'." });
+            }
 
-            res.status(201).json({ mensagem: "Pedido registrado!", id: resultado.insertId })
-        } catch (erro) {
-            console.log("Erro ao criar pedido:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
+            // verificar se o pedido já existe para este cliente
+            const pedidoExistente = await pedidoModel.selecionaPedidoPorId(id_cliente);
+            if (pedidoExistente) {
+                return res.status(409).json({ erro: "Pedido já cadastrado para este cliente." });
+            }
+
+            // salvar
+            const resultado = await pedidoModel.criarPedido(
+                id_cliente,
+                data_pedido,
+                tipo_entrega,
+                distancia_km,
+                peso_kg
+            );
+
+            return res.status(201).json({
+                mensagem: "Pedido cadastrado com sucesso!",
+                resultado
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Erro no servidor.",
+                erro: error.message
+            });
         }
     },
 
-    // pega todos os pedidos feitos
-    listarPedidos: async (req, res) => {
+    // Selecionar todos
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * @example
+     * GET /pedidos
+     * // Output:
+     * [
+     *   {
+     *    "id_pedido": 1,
+     *   "id_cliente_fk": 1,
+     *   "data_pedido": "2024-06-15",
+     *   "tipo_entrega": "urgente",
+     *   "distancia_km": 50,
+     *   "peso_kg": 10,
+     *   "valor_km": 100,
+     *  "valor_kg": 50,
+     *  "valor_total": 195
+     *  },
+     *  {
+     *   "id_pedido": 2,
+     *  "id_cliente_fk": 2,
+     *  "data_pedido": "2024-06-16",
+     *  "tipo_entrega": "normal",
+     *  "distancia_km": 30,
+     *  "peso_kg": 5,
+     *  "valor_km": 60,
+     *  "valor_kg": 25,
+     *  "valor_total": 85
+     * }
+     * ]
+     */
+    selecionaTodosPedidos: async (req, res) => {
         try {
-            const [lista] = await pedidoModel.listarPedidos()
-            res.json(lista)
+            const pedidos = await pedidoModel.selecionaTodosPedidos();
+            //nome do cliente 
+            const pedidosComCliente = await Promise.all(pedidos.map(async (pedido) => {
+                const cliente = await ClienteModel.selecionerClientePorId(pedido.id_cliente_fk);
+                return {
+                    ...pedido,
+                    cliente_nome: cliente ? cliente.nome : null
+                };
+            }));
+            return res.status(200).json(pedidosComCliente);
         } catch (erro) {
-            console.log("Erro ao listar pedidos:", erro)
-            res.status(500).json({ erro: "Erro interno no servidor." })
+            return res.status(500).json({
+                erro: erro.message || "Erro ao buscar pedidos."
+            });
+        }
+    },
+
+   //atualizaçao do pedido
+    atualizaPedido: async (req, res) => {
+    try {
+        const { id_pedido } = req.query;
+
+        const {
+            tipo_entrega,
+            distancia_km,
+            peso_kg
+        } = req.body;
+
+        if (!id_pedido) {
+            return res.status(400).json({ erro: "ID do pedido é obrigatório." });
+        }
+
+        if (!tipo_entrega || distancia_km == null || peso_kg == null) {
+            return res.status(400).json({ erro: "Todos os campos devem ser preenchidos." });
+        }
+
+        const resultado = await pedidoModel.atualizaPedido(
+            id_pedido,
+            tipo_entrega,
+            distancia_km,
+            peso_kg
+        );
+
+        return res.status(200).json({
+            mensagem: "Pedido atualizado com sucesso!",
+            resultado
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Erro no servidor.",
+            erro: error.message
+        });
+    }
+},
+/**
+*
+ * @param {*} req  Objeto da requisição contendo os parâmetros da rota
+ * @param {*} res  Objeto de resposta HTTP
+ * @returns Resposta JSON informando sucesso ou erro
+ */
+    deletarPedido: async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).json({ erro: "ID do pedido é obrigatório." });
+            }
+            const pedidoExistente = await pedidoModel.selecionaPedidoPorId(id);
+            if (!pedidoExistente) {
+                return res.status(404).json({ erro: "Pedido não encontrado." });
+            }
+        
+            const resultado = await pedidoModel.DeletaPedido(id);
+            return res.status(200).json({
+                mensagem: "Pedido deletado com sucesso!",
+                resultado
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Erro no servidor.",
+                erro: error.message
+            });
+            
         }
     }
-}
 
-module.exports = { pedidoController }
+
+
+};
+
+module.exports = pedidoController;
