@@ -1,7 +1,7 @@
 const express = require('express');
-const clienteRoutes = require("./routes/clienteRoutes");
-const pedidoRoutes = require("./routes/pedidoRoutes");
-const entregaRoutes = require("./routes/entregaRoutes");
+  const {clienteRoutes} = require("./routes/clienteRoutes");
+const {pedidoRoutes} = require("./routes/pedidoRoutes");
+const {entregaRoutes} = require("./routes/entregaRoutes");
 
 const app = express();
 app.use(express.json());

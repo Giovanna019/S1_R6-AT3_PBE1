@@ -1,6 +1,6 @@
 const { query } = require('../config/db');
 const {ClienteModel} = require('../models/clienteModel');
-const { telefoneModel } = require('../models/telefoneModel');
+// const { telefoneModel } = require('../models/telefoneModel');
 
 const ClienteController = {
 
