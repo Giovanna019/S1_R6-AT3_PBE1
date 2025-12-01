@@ -52,40 +52,7 @@ const pedidoController = {
         }
     },
 
-    // Selecionar todos
-    /**
-     * 
-     * @param {*} req 
-     * @param {*} res 
-     * @returns 
-     * @example
-     * GET /pedidos
-     * // Output:
-     * [
-     *   {
-     *    "id_pedido": 1,
-     *   "id_cliente_fk": 1,
-     *   "data_pedido": "2024-06-15",
-     *   "tipo_entrega": "urgente",
-     *   "distancia_km": 50,
-     *   "peso_kg": 10,
-     *   "valor_km": 100,
-     *  "valor_kg": 50,
-     *  "valor_total": 195
-     *  },
-     *  {
-     *   "id_pedido": 2,
-     *  "id_cliente_fk": 2,
-     *  "data_pedido": "2024-06-16",
-     *  "tipo_entrega": "normal",
-     *  "distancia_km": 30,
-     *  "peso_kg": 5,
-     *  "valor_km": 60,
-     *  "valor_kg": 25,
-     *  "valor_total": 85
-     * }
-     * ]
-     */
+   
     selecionaTodosPedidos: async (req, res) => {
         try {
             const pedidos = await pedidoModel.selecionaTodosPedidos();

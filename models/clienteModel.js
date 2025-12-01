@@ -2,49 +2,7 @@ const pool = require('../config/db'); // ajuste o caminho conforme seu projeto
 const ClienteModel = {
 
     // Criar novo cliente
-    /**
-     * @param {string} nome_completo 
-     * @param {*} cpf 
-     * @param {*} email 
-     * @param {*} logradouro 
-     * @param {*} numero 
-     * @param {*} bairro 
-     * @param {*} cidade 
-     * @param {*} estado 
-     * @param {*} cep 
-     * @param {*} telefones 
-     * @returns dados do cliente e dos telefones cadastrados
-     * @example
-     * entrada de dados via json
-     * {
-     *  "nome_completo": "Giovanna vitória",
-     *  "cpf": "123.456.789-00",
-     *  "logradouro": "logradouro",
-     * "numero": "100",
-     * "bairro": "Nova veneza",
-     * "cidade": "Sumaré",
-     * "estado": "sp",
-     * "cep": "12345-678",
-     * "telefones": ["(11) 91234-5678", "(11) 99876-5432"]
-     * }
-     *
-     * // Output:
-     * {
-     *   cliente: { insertId: 1, affectedRows: 1, ... },
-     *  telefones: [ { insertId: 1, affectedRows: 1, ... }, { insertId: 2, affectedRows: 1, ... } ]
-     * }
-     *  insomnia 
-     * {
-     *  "cliente": {
-     *    "insertId": 1,
-     *   "affectedRows": 1,
-     *   ...
-     * },
-     * "telefones": [
-     *   { "insertId": 1, "affectedRows": 1, ... },
-     *  { "insertId": 2, "affectedRows": 1, ... }
-     * ]
-     */
+    
     criarCliente: async (nome_completo, cpf, email, logradouro, numero, bairro, cidade, estado, cep, telefones = []) => {
         const connection = await pool.getConnection();
 
