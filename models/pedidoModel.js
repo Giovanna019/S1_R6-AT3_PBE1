@@ -21,12 +21,8 @@ const PedidoModel = {
             await connection.beginTransaction();
 
             // Verifica se o cliente existe
-            const sqlVerificaCliente = 'SELECT IDCliente FROM clientes WHERE IDCliente = ?';
+            const sqlVerificaCliente = 'SELECT id_Cliente FROM clientes WHERE id_cliente = ?';
             const [clienteExiste] = await connection.query(sqlVerificaCliente, [id_cliente]);
-
-            if (clienteExiste.length === 0) {
-                throw new Error("Cliente informado não existe.");
-            }
 
             //  CÁLCULOS 
             const valor_km = distancia_km * VALOR_BASE_KM;
@@ -48,9 +44,9 @@ const PedidoModel = {
             }
             // Insere pedido
             const sql = `
-                INSERT INTO pedidos
-                (id_cliente_fk, data_pedido, tipo_entrega, distancia_km, peso_kg, valor_km, valor_kg, valor_total)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO pedido
+                (id_cliente, data_pedido, tipo_entrega, distancia_pedido, peso_carga, valor_km_pedido, valor_kg_peso)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
 
             const values = [
@@ -86,13 +82,13 @@ const PedidoModel = {
 
 
 
-    // Seleciona os pedidos
+    // Seleciona os pedido
     
-    selecionaTodosPedidos: async () => {
+    selecionaTodospedido: async () => {
         const connection = await pool.getConnection();
 
         try {
-            const sql = 'SELECT * FROM pedidos';
+            const sql = 'SELECT * FROM pedido';
             const [rows] = await connection.query(sql);
             return rows;
 
@@ -111,7 +107,7 @@ const PedidoModel = {
         const connection = await pool.getConnection();
 
         try {
-            const sql = 'SELECT * FROM pedidos WHERE IDPedido = ?';
+            const sql = 'SELECT * FROM pedido WHERE id_cliente = ?';
             const [rows] = await connection.query(sql, [id]);
             return rows.length > 0 ? rows[0] : null;
 
@@ -161,7 +157,7 @@ const PedidoModel = {
         }
  
         const sql = `
-            UPDATE pedidos
+            UPDATE pedido
             SET tipo_entrega = ?, 
                 distancia_km = ?, 
                 peso_kg = ?, 
@@ -198,7 +194,7 @@ const PedidoModel = {
     DeletaPedido: async (id_pedido) => {
         const connection = await pool.getConnection();
         try {
-            const sql = 'DELETE FROM pedidos WHERE IDPedido = ?';
+            const sql = 'DELETE FROM pedido WHERE IDPedido = ?';
             const values = [id_pedido];
             const [result] = await connection.query(sql, values);
             connection.commit();
