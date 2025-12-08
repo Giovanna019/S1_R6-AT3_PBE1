@@ -1,5 +1,5 @@
-const { ClienteModel } = require('../models/clienteModel');
-const pedidoModel = require('../models/pedidoModel');
+const { ClienteModel } = require('./models/clienteModel');
+const pedidoModel = require('./models/pedidoModel');
 const pedidoController = {
 
   
@@ -7,11 +7,7 @@ const pedidoController = {
     criaPedido: async (req, res) => {
         try {
             const {
-                id_cliente,
-                data_pedido,
-                tipo_entrega,
-                distancia_km,
-                peso_kg
+                id_cliente,data_pedido,tipo_entrega,distancia_km,peso_kg
             } = req.body;
 
             // validação
@@ -31,12 +27,7 @@ const pedidoController = {
 
             // salvar
             const resultado = await pedidoModel.criarPedido(
-                id_cliente,
-                data_pedido,
-                tipo_entrega,
-                distancia_km,
-                peso_kg
-            );
+                id_cliente, data_pedido, tipo_entrega, distancia_km, peso_kg);
 
             return res.status(201).json({
                 mensagem: "Pedido cadastrado com sucesso!",
@@ -78,9 +69,7 @@ const pedidoController = {
         const { id_pedido } = req.query;
 
         const {
-            tipo_entrega,
-            distancia_km,
-            peso_kg
+            tipo_entrega, distancia_km, peso_kg
         } = req.body;
 
         if (!id_pedido) {
@@ -92,11 +81,7 @@ const pedidoController = {
         }
 
         const resultado = await pedidoModel.atualizaPedido(
-            id_pedido,
-            tipo_entrega,
-            distancia_km,
-            peso_kg
-        );
+            id_pedido, tipo_entrega, distancia_km, peso_kg);
 
         return res.status(200).json({
             mensagem: "Pedido atualizado com sucesso!",

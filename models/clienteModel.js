@@ -1,40 +1,39 @@
-const pool = require('../config/db'); // ajuste o caminho conforme seu projeto
+const pool = require('.config/db');
+
 const ClienteModel = {
 
     // Criar novo cliente
-    
-    criarCliente: async (nome_cliente, cpf_cliente, email_cliente, id_cliente, endereco_cliente,telefones = []) => {
+    criarCliente: async (nome_cliente, cpf_cliente, email_cliente, endereco_cliente, telefones = []) => {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
-            // Verifica se o nome completo 
-            const sqlVerificaNome = 'SELECT nome_cliente FROM clientes WHERE nome_cliente= ?';
+            // Verifica se o nome já existe
+            const sqlVerificaNome = 'SELECT nome_cliente FROM clientes WHERE nome_cliente = ?';
             const [nomeExistente] = await connection.query(sqlVerificaNome, [nome_cliente]);
 
             if (nomeExistente.length > 0) {
-                throw new Error('Nome completo já cadastrado');
+                throw new Error('Nome completo já está cadastrado');
             }
 
             // Insere cliente
             const sqlCliente = `
                 INSERT INTO clientes 
-                (id_cliente, nome_cliente, cpf_cliente, emailcliente, endereco_cliente)
-                VALUES (?, ?, ?, ?, ?);`;
+                (nome_cliente, cpf_cliente, email_cliente, endereco_cliente)
+                VALUES (?, ?, ?, ?)
+            `;
 
-            const valuesCliente = [
-              id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
-            ];
+            const [resultCliente] = await connection.query(sqlCliente, [
+                nome_cliente,
+                cpf_cliente,
+                email_cliente,
+                endereco_cliente
+            ]);
 
-            const [rowsCliente] = await connection.query(sqlCliente, valuesCliente);
-            const clienteId = rowsCliente.insertId;
+            const clienteId = resultCliente.insertId;
 
-            // Insere o telefone
+            // Telefones
             const resultadosTelefones = [];
 
             if (telefones.length > 0) {
@@ -44,97 +43,94 @@ const ClienteModel = {
                 `;
 
                 for (const tel of telefones) {
-                    const [rowsTel] = await connection.query(sqlTelefone, [clienteId, tel]);
-                    resultadosTelefones.push(rowsTel);
+                    const [telResult] = await connection.query(sqlTelefone, [clienteId, tel]);
+                    resultadosTelefones.push(telResult);
                 }
             }
 
             await connection.commit();
 
             return {
-                cliente: rowsCliente,
+                cliente: resultCliente,
                 telefones: resultadosTelefones
             };
 
         } catch (error) {
             await connection.rollback();
             throw error;
+        } finally {
+            connection.release();
         }
     },
 
-    // Seleciona  os clientes
-   
+    // Selecionar todos os clientes
     selecionaTodosClientes: async () => {
-        const connection = await pool.getConnection();
-
-        try {
-            const sql = 'SELECT * FROM clientes';
-            const [rows] = await connection.query(sql);
-            return rows;
-
-        } catch (error) {
-            await connection.rollback();
-            throw error;
-        }
+        const [rows] = await pool.query('SELECT * FROM clientes');
+        return rows;
     },
 
-    //Atualizar cliente 
-    
-    atualizaCliente: async (id_cliente, nome_completo, cpf, email, logradouro, numero, bairro, cidade, estado, cep) => {
+    // Selecionar cliente por CPF
+    selecionarClientePorCpf: async (cpf_cliente) => {
+        const [rows] = await pool.query(
+            'SELECT * FROM clientes WHERE cpf_cliente = ?',
+            [cpf_cliente]
+        );
+        return rows[0];
+    },
+
+    // Atualizar cliente
+    atualizaCliente: async (id_cliente, nome_cliente, cpf_cliente, email_cliente, endereco_cliente) => {
         const connection = await pool.getConnection();
 
         try {
+            await connection.beginTransaction();
+
             const sql = `
-                INSERT INTO clientes
-                (id_cliente, nome_cliente, cpf_cliente, email_cliente, endereco_cliente)
-                VALUES (?, ?, ?, ?, ?);`;
+                UPDATE clientes 
+                SET nome_cliente = ?, cpf_cliente = ?, email_cliente = ?, endereco_cliente = ?
+                WHERE id_cliente = ?
+            `;
 
-            const values = [
-             id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
-            ];
+            const [result] = await connection.query(sql, [
+                nome_cliente,
+                cpf_cliente,
+                email_cliente,
+                endereco_cliente,
+                id_cliente
+            ]);
 
-            const [rows] = await connection.query(sql, values);
             await connection.commit();
-            return rows;
+            return result;
 
         } catch (error) {
             await connection.rollback();
             throw error;
-            
-        }   
-    },
-
-    selecionarClientePorCpf: async (cpf) => {
-        const connection = await pool.getConnection();
-
-        try {
-            const sql = 'SELECT * FROM clientes WHERE cpf = ?';
-            const [rows] = await connection.query(sql, [cpf]);
-            return rows[0];
-
-        } catch (error) {
-            throw error;
+        } finally {
+            connection.release();
         }
     },
 
-//delete do cliente
+    // Deletar cliente
     deleteCliente: async (id_cliente) => {
         const connection = await pool.getConnection();
+
         try {
-            const sql = 'DELETE FROM clientes WHERE IDCliente = ?';
-            const [rows] = await connection.query(sql, [id_cliente]);
-            connection.commit();
-            return rows;
+            await connection.beginTransaction();
+
+            const sql = 'DELETE FROM clientes WHERE id_cliente = ?';
+            const [result] = await connection.query(sql, [id_cliente]);
+
+            await connection.commit();
+            return result;
+
         } catch (error) {
-            console.log(error);
-            connection.rollback();
+            await connection.rollback();
             throw error;
+        } finally {
+            connection.release();
         }
     }
-    
+
 };
-module.exports = {ClienteModel};
+
+module.exports = { ClienteModel };

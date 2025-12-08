@@ -1,6 +1,6 @@
 const express = require('express');
 const telefoneRoutes = express.Router();
-const { telefoneController } = require('../controllers/telefoneController');
+const { telefoneController } = require('./controllers/telefoneController');
 
 // Rota para criar um novo telefone
 telefoneRoutes.post('/telefones', telefoneController.criarTelefone);

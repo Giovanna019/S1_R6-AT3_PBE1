@@ -1,10 +1,10 @@
-const { query } = require('../config/db');
-const { entregaModel } = require('../models/entregaModel');
+const { query } = require('./config/db');
+const { entregaModel } = require('./models/entregaModel');
 const entregaController = {
 
     mostraTodasEntregas: async (req, res) => {
         try {
-            const entregas = await entregaModel.mostraTodasEntregas();
+            const entregas = await entregaModel.TodasEntregas();
 
             if (entregas.length === 0) {
                 return res.status(200).json({ mensagem: "Nenhuma entrega encontrada." });

@@ -10,6 +10,6 @@ app.use("/", pedidoRoutes);
 app.use("/", entregaRoutes);
 
 // inicia o servidor
-app.listen(3000, () => {
+app.listen(3008, () => {
   console.log("Servidor rodando na porta 3008");
 });

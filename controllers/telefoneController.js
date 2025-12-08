@@ -1,5 +1,5 @@
-const { query } = require('../config/db');
-const { telefoneModel } = require('../models/telefoneModel');
+const { query } = require('./config/db');
+const { telefoneModel } = require('./models/telefoneModel');
 const telefoneController = {
    
     //criação do telefoone
@@ -12,10 +12,7 @@ const telefoneController = {
             }
 
             const resultado = await telefoneModel.adicionarTelefone(
-                id_cliente_fk,
-                numero_telefone,
-    
-            );
+                id_cliente_fk, numero_telefone );
 
             return res.status(201).json({
                 mensagem: "Telefone cadastrado com sucesso!",

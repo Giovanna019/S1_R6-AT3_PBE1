@@ -1,35 +1,30 @@
-const { query } = require('../config/db');
-const {ClienteModel} = require('../models/clienteModel');
-const { telefoneModel } = require('../models/telefoneModel');
+const { ClienteModel } = require('./models/clienteModel');
+const { telefoneModel } = require('./models/telefoneModel');
 
 const ClienteController = {
 
     // Criar cliente
     criarCliente: async (req, res) => {
         try {
-            const {
-                 id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
-            } = req.body;
+            const { nome_cliente, cpf_cliente, email_cliente, endereco_cliente, telefones } = req.body;
 
-            if (!id_cliente || !nome_cliente || !cpf_cliente || !email_cliente || !endereco_cliente) {
-                return res.status(400).json({ erro: "Todos os campos principais devem ser preenchidos." });};
- 
-            
-            const cpfExistente = await ClienteModel.selecionarClientePorCpf(cpf);
+            if (!nome_cliente || !cpf_cliente || !email_cliente || !endereco_cliente) {
+                return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
+            }
 
-            if (cpf == cpfExistente) {
-                return res.status(409).json({ erro: "CPF já cadastrado no sistema." });}
+            // Verifica CPF existente
+            const cpfExiste = await ClienteModel.selecionarClientePorCpf(cpf_cliente);
+
+            if (cpfExiste) {
+                return res.status(409).json({ erro: "CPF já cadastrado no sistema." });
+            }
 
             const resultado = await ClienteModel.criarCliente(
-             id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
+                nome_cliente,
+                cpf_cliente,
+                email_cliente,
+                endereco_cliente,
+                telefones
             );
 
             return res.status(201).json({
@@ -42,106 +37,85 @@ const ClienteController = {
         }
     },
 
-
     // Selecionar todos os clientes
     selecionaTodosClientes: async (req, res) => {
         try {
             const clientes = await ClienteModel.selecionaTodosClientes();
-            if (clientes.length === 0) {
-                return res.status(200).json({ mensagem: "lista de clientes vazia" });
-            }
             return res.status(200).json(clientes);
-
         } catch (error) {
             return res.status(500).json({ erro: error.message });
         }
     },
-
 
     // Atualizar cliente
     atualizaCliente: async (req, res) => {
-    try {
-        const id = req.params.id; // ← CORRETO
-
-        const {
-             id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
-        } = req.body;
-
-        if (!id) {
-            return res.status(400).json({ erro: "ID do cliente é obrigatório." });
-        }
-
-        const resultado = await ClienteModel.atualizaCliente(
-          id_cliente,
-            nome_cliente,
-            cpf_cliente,
-            email_cliente,
-            endereco_cliente
-        );
-
-        return res.status(200).json({
-            mensagem: "Cliente atualizado com sucesso!",
-            resultado
-        });
-
-    } catch (error) {
-        return res.status(500).json({ erro: error.message });
-    }
-},
-
-
-    //ATUALIZAR TELEFONE
-    atualizaTelefone: async (req, res) => {
         try {
-            const {id_telefone} = req.query.id_telefone;
-            const {novo_numero} = req.body;
+            const id = req.params.id;
+            const { nome_cliente, cpf_cliente, email_cliente, endereco_cliente } = req.body;
 
-            if (!id_telefone || !novo_numero || novo_numero.trim() === '' || novo_numero.length < 8 || novo_numero.length > 15) {
-                return res.status(400).json({ erro: "ID do telefone e novo número são obrigatórios. O número deve ter entre 8 e 15 caracteres." });
+            if (!id) {
+                return res.status(400).json({ erro: "O ID do cliente é obrigatório." });
             }
-            const resultado = await telefoneModel.atualizaTelefone(id_telefone, novo_numero);
-            
+
+            const resultado = await ClienteModel.atualizaCliente(
+                id,
+                nome_cliente,
+                cpf_cliente,
+                email_cliente,
+                endereco_cliente
+            );
+
             return res.status(200).json({
-                message : "Telefone atualizado com sucesso!",
-                data : resultado
-            })
-            
+                mensagem: "Cliente atualizado com sucesso!",
+                resultado
+            });
+
         } catch (error) {
-            console.error ("Erro ao atualizar telefone:", error)
             return res.status(500).json({ erro: error.message });
         }
     },
 
-   // Deletar Cliente
-    DeleteCliente: async (req,res) => {
+    // Atualizar telefone
+    atualizaTelefone: async (req, res) => {
         try {
-            const id_cliente = req.params.id;
-            if (!id_cliente || id_cliente.trim() === '') {
-                return res.status(400).json({ erro: "ID do cliente é obrigatório." });
+            const id_telefone = req.params.id;
+            const { novo_numero } = req.body;
+
+            if (!id_telefone || !novo_numero) {
+                return res.status(400).json({ erro: "ID do telefone e novo número são obrigatórios." });
             }
-            //se o cliente ja foi deletado, dar mensagem de erro.
-            const clienteExistente = await ClienteModel.selecionarClientePorId(id_cliente);
-            if (!clienteExistente) {
-                return res.status(404).json({ erro: "Cliente não encontrado ou já deletado." });
-            }
-            //se o status da entrega nao estiver em entregue, nao deixar deletar o cliente
-            if (clienteExistente.status_entrega !== 'entregue') {
-                return res.status(400).json({ erro: "Não é possível deletar o cliente. Existem entregas pendentes ou em andamento." });
-            }
-            const resultado = await ClienteModel.deleteCliente(id_cliente);
+
+            const resultado = await telefoneModel.atualizaTelefone(id_telefone, novo_numero);
+
             return res.status(200).json({
-                message: "Cliente deletado com sucesso!",
-                data: resultado
+                mensagem: "Telefone atualizado com sucesso!",
+                resultado
             });
+
         } catch (error) {
-            console.error("Erro ao deletar cliente:", error);
             return res.status(500).json({ erro: error.message });
         }
+    },
 
+    // Deletar cliente
+    deleteCliente: async (req, res) => {
+        try {
+            const id_cliente = req.params.id;
+
+            if (!id_cliente) {
+                return res.status(400).json({ erro: "ID do cliente é obrigatório." });
+            }
+
+            const resultado = await ClienteModel.deleteCliente(id_cliente);
+
+            return res.status(200).json({
+                mensagem: "Cliente deletado com sucesso!",
+                resultado
+            });
+
+        } catch (error) {
+            return res.status(500).json({ erro: error.message });
+        }
     }
 
 };
