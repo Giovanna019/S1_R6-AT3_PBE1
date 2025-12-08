@@ -1,0 +1,231 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: S1_R6-AT3_PBE1
+meta:
+  id: wrk_edc80608de3045aba63840460c21d0e6
+  created: 1760363596632
+  modified: 1765219943218
+  description: ""
+collection:
+  - name: clientes
+    meta:
+      id: fld_04b96b5f4f3d4509a7b23fe9122e16ff
+      created: 1765196400985
+      modified: 1765196400985
+      sortKey: -1765196400985
+      description: ""
+    children:
+      - url: localhost:8081/clientes
+        name: listar por id
+        meta:
+          id: req_483a04f1a11c4d35809303d40ecb8a1b
+          created: 1760363958078
+          modified: 1765219655395
+          isPrivate: false
+          description: ""
+          sortKey: -1765196550067
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes/1
+        name: atualizar cliente
+        meta:
+          id: req_faace3cb6bd74a88a9b39cb2650039c7
+          created: 1765196474413
+          modified: 1765218877424
+          isPrivate: false
+          description: ""
+          sortKey: -1765196474413
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes/1
+        name: deletar cliente
+        meta:
+          id: req_601a8ebe0e1940829429712bbe0394bc
+          created: 1765196549967
+          modified: 1765218883495
+          isPrivate: false
+          description: ""
+          sortKey: -1765196549967
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/clientes
+        name: criar clientes
+        meta:
+          id: req_c2af0e1c749e43c4bf46314a88ae4019
+          created: 1765199116406
+          modified: 1765219781491
+          isPrivate: false
+          description: ""
+          sortKey: -1765199116406
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            {
+              "id_cliente": 1,
+              "nome_cliente": "andre",
+              "cpf_cliente": "098743579",
+              "email_cliente": "andre@email.com",
+              "endereco_cliente": "alamedas151"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Entregas
+    meta:
+      id: fld_35d40faf55ba4908976012d254f1e6d0
+      created: 1765196442612
+      modified: 1765199439829
+      sortKey: -1765197457946
+      description: ""
+    children:
+      - url: localhost:8081/entregas
+        name: Listar entregas
+        meta:
+          id: req_94c2f86f78d84c448c946faf4b64b121
+          created: 1764596810009
+          modified: 1765210494448
+          isPrivate: false
+          description: ""
+          sortKey: -1765196457675
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8081/entregas
+        name: Buscar entrega
+        meta:
+          id: req_2d573f2efdee49c88dd1afe46f59ec28
+          created: 1765196457575
+          modified: 1765210509449
+          isPrivate: false
+          description: ""
+          sortKey: -1765196457575
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Pedidos
+    meta:
+      id: fld_1437781c56314409a1ae37aa04c07b48
+      created: 1765197457846
+      modified: 1765197457846
+      sortKey: -1765197457846
+      description: ""
+    children:
+      - url: localhost:8081/pedidos
+        name: New Request
+        meta:
+          id: req_86edf51252e94c8c91d5cc6eb2babe69
+          created: 1765197461645
+          modified: 1765218165405
+          isPrivate: false
+          description: ""
+          sortKey: -1765197461645
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            {
+              "id_cliente": 1,
+              "data_pedido": "2024-12-08",
+              "tipo_entrega": "normal",
+              "distancia_km":5,
+              "peso_kg": 10,
+              "valor_km_pedido":5,
+              "valor_kg_peso": 32
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.1.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_4090598fbdc75f5bf98c1c54b6beaf912fceee69
+    created: 1760363596681
+    modified: 1760363596681
+environments:
+  name: Base Environment
+  meta:
+    id: env_4090598fbdc75f5bf98c1c54b6beaf912fceee69
+    created: 1760363596654
+    modified: 1760363596654
+    isPrivate: false
