@@ -1,4 +1,4 @@
-const pool = require('./config/db');
+const pool = require('../config/db');
 //valores
 const VALOR_BASE_KM = 10;
 const VALOR_BASE_KG = 25;

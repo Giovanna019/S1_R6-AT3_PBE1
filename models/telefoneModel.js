@@ -1,4 +1,4 @@
-const pool = require('./config/db');
+const pool = require('../config/db');
 const telefoneModel = {
 
     // Função para adicionar um novo telefone

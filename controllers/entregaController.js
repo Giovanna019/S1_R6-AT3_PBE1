@@ -1,5 +1,5 @@
-const { query } = require('./config/db');
-const { entregaModel } = require('./models/entregaModel');
+const { query } = require('../config/db');
+const { entregaModel } = require('../models/entregaModel');
 const entregaController = {
 
     mostraTodasEntregas: async (req, res) => {

@@ -5,11 +5,12 @@ const {entregaRoutes} = require("./routes/entregaRoutes");
 
 const app = express();
 app.use(express.json());
+
 app.use("/", clienteRoutes);
 app.use("/", pedidoRoutes);
 app.use("/", entregaRoutes);
 
 // inicia o servidor
-app.listen(3008, () => {
-  console.log("Servidor rodando na porta 3008");
+app.listen(8081, () => {
+  console.log("Servidor rodando na porta 8081");
 });

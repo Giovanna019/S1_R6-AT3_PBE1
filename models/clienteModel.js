@@ -1,6 +1,6 @@
-const pool = require('.config/db');
+const pool = require('../config/db');
 
-const ClienteModel = {
+const clienteModel = {
 
     // Criar novo cliente
     criarCliente: async (nome_cliente, cpf_cliente, email_cliente, endereco_cliente, telefones = []) => {
@@ -133,4 +133,4 @@ const ClienteModel = {
 
 };
 
-module.exports = { ClienteModel };
+module.exports = { clienteModel };

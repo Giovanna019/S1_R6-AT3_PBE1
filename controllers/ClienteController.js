@@ -1,7 +1,7 @@
-const { ClienteModel } = require('./models/clienteModel');
-const { telefoneModel } = require('./models/telefoneModel');
+const { clienteModel } = require('../models/clienteModel');
+const { telefoneModel } = require('../models/telefoneModel');
 
-const ClienteController = {
+const clienteController = {
 
     // Criar cliente
     criarCliente: async (req, res) => {
@@ -13,13 +13,13 @@ const ClienteController = {
             }
 
             // Verifica CPF existente
-            const cpfExiste = await ClienteModel.selecionarClientePorCpf(cpf_cliente);
+            const cpfExiste = await clienteModel.selecionarClientePorCpf(cpf_cliente);
 
             if (cpfExiste) {
                 return res.status(409).json({ erro: "CPF já cadastrado no sistema." });
             }
 
-            const resultado = await ClienteModel.criarCliente(
+            const resultado = await clienteModel.criarCliente(
                 nome_cliente,
                 cpf_cliente,
                 email_cliente,
@@ -40,7 +40,7 @@ const ClienteController = {
     // Selecionar todos os clientes
     selecionaTodosClientes: async (req, res) => {
         try {
-            const clientes = await ClienteModel.selecionaTodosClientes();
+            const clientes = await clienteModel.selecionaTodosClientes();
             return res.status(200).json(clientes);
         } catch (error) {
             return res.status(500).json({ erro: error.message });
@@ -57,7 +57,7 @@ const ClienteController = {
                 return res.status(400).json({ erro: "O ID do cliente é obrigatório." });
             }
 
-            const resultado = await ClienteModel.atualizaCliente(
+            const resultado = await clienteModel.atualizaCliente(
                 id,
                 nome_cliente,
                 cpf_cliente,
@@ -106,7 +106,7 @@ const ClienteController = {
                 return res.status(400).json({ erro: "ID do cliente é obrigatório." });
             }
 
-            const resultado = await ClienteModel.deleteCliente(id_cliente);
+            const resultado = await clienteModel.deleteCliente(id_cliente);
 
             return res.status(200).json({
                 mensagem: "Cliente deletado com sucesso!",
@@ -120,4 +120,4 @@ const ClienteController = {
 
 };
 
-module.exports = ClienteController;
+    module.exports = {clienteController};
