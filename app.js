@@ -1,9 +1,10 @@
 const express = require('express');
-  const {clienteRoutes} = require("./routes/clienteRoutes");
-const {pedidoRoutes} = require("./routes/pedidoRoutes");
-const {entregaRoutes} = require("./routes/entregaRoutes");
+const { clienteRoutes } = require("./routes/clienteRoutes");
+const { pedidoRoutes } = require("./routes/pedidoRoutes");
+const { entregaRoutes } = require("./routes/entregaRoutes");
 
 const app = express();
+const PORT = 8081;
 app.use(express.json());
 
 app.use("/", clienteRoutes);
@@ -11,6 +12,6 @@ app.use("/", pedidoRoutes);
 app.use("/", entregaRoutes);
 
 // inicia o servidor
-app.listen(8081, () => {
-  console.log("Servidor rodando na porta 8081");
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

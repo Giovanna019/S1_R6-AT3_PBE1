@@ -1,16 +1,16 @@
 const express = require('express');
 const clienteRoutes = express.Router();
 
-// Caminho CORRETO para o controller
-const {clienteController} = require('../controllers/clienteController');
+// Rota do controller
+const {clienteController} = require('../controllers/clienteController')
 
-// ROTAS DE CLIENTE
-clienteRoutes.get('/', clienteController.selecionaTodosClientes);        // GET /clientes
-clienteRoutes.post('/', clienteController.criarCliente);                 // POST /clientes
-clienteRoutes.put('/:id', clienteController.atualizaCliente);            // PUT /clientes
-clienteRoutes.delete('/:id', clienteController.deleteCliente);           // DELETE /clientes
+// Rotas do cliente 
+clienteRoutes.get('/', clienteController.selecionaTodosClientes);     
+clienteRoutes.post('/', clienteController.criarCliente);               
+clienteRoutes.put('/:id', clienteController.atualizaCliente);           
+clienteRoutes.delete('/:id', clienteController.deleteCliente);         
 
-// ROTAS DE TELEFONE
-clienteRoutes.put('/telefone/:id', clienteController.atualizaTelefone);  // PUT /clientes/telefone/5
+// Rota do telefone
+clienteRoutes.put('/telefone/:id', clienteController.atualizaTelefone);  
 
 module.exports = {clienteRoutes};
