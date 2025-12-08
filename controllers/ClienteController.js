@@ -8,19 +8,14 @@ const ClienteController = {
     criarCliente: async (req, res) => {
         try {
             const {
-                nome_completo,
-                cpf,
-                email,
-                logradouro,
-                numero,
-                bairro,
-                cidade,
-                estado,
-                cep,
-                telefones
+                 id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
             } = req.body;
 
-            if (!nome_completo || !cpf || !email || !logradouro || !numero || !bairro || !cidade || !estado || !cep ||! telefones) {
+            if (!id_cliente || !nome_cliente || !cpf_cliente || !email_cliente || !endereco_cliente) {
                 return res.status(400).json({ erro: "Todos os campos principais devem ser preenchidos." });};
  
             
@@ -30,16 +25,11 @@ const ClienteController = {
                 return res.status(409).json({ erro: "CPF já cadastrado no sistema." });}
 
             const resultado = await ClienteModel.criarCliente(
-                nome_completo,
-                cpf,
-                email,
-                logradouro,
-                numero,
-                bairro,
-                cidade,
-                estado,
-                cep,
-                telefones
+             id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
             );
 
             return res.status(201).json({
@@ -74,15 +64,11 @@ const ClienteController = {
         const id = req.params.id; // ← CORRETO
 
         const {
-            nome_completo,
-            cpf,
-            email,
-            logradouro,
-            numero,
-            bairro,
-            cidade,
-            estado,
-            cep
+             id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
         } = req.body;
 
         if (!id) {
@@ -90,16 +76,11 @@ const ClienteController = {
         }
 
         const resultado = await ClienteModel.atualizaCliente(
-            id,
-            nome_completo,
-            cpf,
-            email,
-            logradouro,
-            numero,
-            bairro,
-            cidade,
-            estado,
-            cep
+          id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
         );
 
         return res.status(200).json({
@@ -143,7 +124,7 @@ const ClienteController = {
                 return res.status(400).json({ erro: "ID do cliente é obrigatório." });
             }
             //se o cliente ja foi deletado, dar mensagem de erro.
-            const clienteExistente = await ClienteModel.selecionerClientePorId(id_cliente);
+            const clienteExistente = await ClienteModel.selecionarClientePorId(id_cliente);
             if (!clienteExistente) {
                 return res.status(404).json({ erro: "Cliente não encontrado ou já deletado." });
             }

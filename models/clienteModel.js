@@ -3,15 +3,15 @@ const ClienteModel = {
 
     // Criar novo cliente
     
-    criarCliente: async (nome_completo, cpf, email, logradouro, numero, bairro, cidade, estado, cep, telefones = []) => {
+    criarCliente: async (nome_cliente, cpf_cliente, email_cliente, id_cliente, endereco_cliente,telefones = []) => {
         const connection = await pool.getConnection();
 
         try {
             await connection.beginTransaction();
 
             // Verifica se o nome completo 
-            const sqlVerificaNome = 'SELECT nome_completo FROM clientes WHERE nome_completo = ?';
-            const [nomeExistente] = await connection.query(sqlVerificaNome, [nome_completo]);
+            const sqlVerificaNome = 'SELECT nome_cliente FROM clientes WHERE nome_cliente= ?';
+            const [nomeExistente] = await connection.query(sqlVerificaNome, [nome_cliente]);
 
             if (nomeExistente.length > 0) {
                 throw new Error('Nome completo já cadastrado');
@@ -20,20 +20,15 @@ const ClienteModel = {
             // Insere cliente
             const sqlCliente = `
                 INSERT INTO clientes 
-                (nome_completo, cpf, email, logradouro, numero, bairro, cidade, estado, cep)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
+                (id_cliente, nome_cliente, cpf_cliente, emailcliente, endereco_cliente)
+                VALUES (?, ?, ?, ?, ?);`;
 
             const valuesCliente = [
-                nome_completo,
-                cpf,
-                email,
-                logradouro,
-                numero,
-                bairro,
-                cidade,
-                estado,
-                cep
+              id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
             ];
 
             const [rowsCliente] = await connection.query(sqlCliente, valuesCliente);
@@ -90,22 +85,16 @@ const ClienteModel = {
 
         try {
             const sql = `
-                UPDATE clientes
-                SET nome_completo = ?, cpf = ?, email = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, estado = ?, cep = ?
-                WHERE IDCliente = ?
-            `;
+                INSERT INTO clientes
+                (id_cliente, nome_cliente, cpf_cliente, email_cliente, endereco_cliente)
+                VALUES (?, ?, ?, ?, ?);`;
 
             const values = [
-                nome_completo,
-                cpf,
-                email,
-                logradouro,
-                numero,
-                bairro,
-                cidade,
-                estado,
-                cep,
-                id_cliente
+             id_cliente,
+            nome_cliente,
+            cpf_cliente,
+            email_cliente,
+            endereco_cliente
             ];
 
             const [rows] = await connection.query(sql, values);
